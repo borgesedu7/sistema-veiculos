@@ -1,0 +1,140 @@
+openapi: '3.0.1'
+info:
+  title: API de Veículos
+  description: API para gerenciamento de veículos, com operações CRUD completas.
+  version: '1.0'
+servers:
+  - url: http://{host}:{porta}/api
+    variables:
+      host:
+        default: localhost
+      porta:
+        default: '8000'
+
+paths:
+  /veiculos:
+    get:
+      operationId: getVeiculos
+      summary: Acessar lista de veículos
+      responses:
+        '200':
+          description: OK
+          content: 
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/veiculo'
+
+    
+    post:
+      summary: Criar veículo
+      operationId: postVeiculo
+      security:
+        - bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/veiculoInput'
+      responses:
+        201:
+          description: Veículo criado
+
+  /veiculos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          description: ID único do veículo
+  
+    get:
+      operationId: getVeiculo
+      summary: Acessar detalhes de um veículo
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/veiculo'
+        '404':
+          description: Veículo não encontrado.
+
+    put:
+      summary: Atualizar veículo
+      security:
+        - bearer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/veiculoInput'
+      responses:
+        '200':
+          description: Veículo atualizado
+        '404':
+          description: Veículo não encontrado.
+
+    delete:
+      summary: Apagar veículo
+      security:
+        - bearer: []
+      responses:
+        '200':
+          description: Veículo apagado
+        '404':
+          description: Veículo não encontrado.
+
+components:
+  schemas:  
+    veiculo:
+      type: object
+      description: Representação de um veículo.
+      properties:
+        id:
+          type: integer
+          description: ID único do veículo.
+          example: 1
+        marca:
+          type: string
+          description: Marca do veículo.
+          example: "Toyota"
+        modelo:
+          type: string
+          description: Modelo do veículo.
+          example: "Corolla"
+        ano_fabricacao:
+          type: integer
+          description: Ano de fabricação do veículo.
+          example: 2020
+        data_cadastro:
+          type: string
+          format: date-time
+          description: Data e hora do cadastro do veículo.
+       
+          
+    veiculoInput:
+      type: object
+      properties:
+        marca:
+          type: string
+          description: Marca do veículo.
+        modelo:
+          type: string
+          description: Modelo do veículo.
+        ano_fabricacao:
+          type: integer
+          description: Ano de fabricação do veículo.
+       
+
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
